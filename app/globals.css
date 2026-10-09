@@ -2,17 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg: #f5f1ea;
+  --ink: #0f172a;
+  --accent: #ea580c;
+  --clay-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 12px -2px rgb(120 72 32 / 0.08), 0 12px 32px -8px rgb(120 72 32 / 0.10);
+  --clay-inset: inset 0 1px 0 rgb(255 255 255 / 0.9);
+}
+
 html,
 body {
   height: 100%;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--bg);
+  color: var(--ink);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow: hidden;
 }
 
 :focus-visible {
-  outline: 2px solid #f97316;
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@layer components {
+  /* Soft "clay" surface: warm layered shadow, hairline border, rounded corners. */
+  .card {
+    @apply rounded-2xl border border-black/[0.06] bg-white;
+    box-shadow: var(--clay-shadow), var(--clay-inset);
+  }
+  .field {
+    @apply min-h-[40px] rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition-colors hover:border-slate-400 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/30;
+  }
+  .btn-primary {
+    @apply flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-b from-slate-800 to-slate-950 px-4 text-sm font-semibold text-white shadow-md shadow-slate-900/20 transition hover:-translate-y-px hover:shadow-lg active:translate-y-0 disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-icon {
+    @apply flex min-h-[40px] min-w-[40px] items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-sm transition-colors hover:border-slate-400 hover:bg-slate-50;
+  }
+  .btn-icon[aria-pressed="true"] {
+    @apply border-blue-700 bg-blue-700 text-white hover:bg-blue-700;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-wide text-slate-600;
+  }
+  .badge {
+    @apply rounded-md px-1.5 py-0.5 text-[11px] font-semibold tracking-wide;
+  }
+}
+
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .spinner {
@@ -29,29 +74,32 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* ---------- Map pins ---------- */
 .pin {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 9999px;
-  border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  border: 2.5px solid #fff;
+  box-shadow: 0 2px 6px rgb(15 23 42 / 0.25), 0 8px 16px -6px rgb(15 23 42 / 0.35);
   color: #fff;
   font-size: 15px;
   line-height: 1;
+  transition: transform 0.15s ease;
 }
+.pin:hover { transform: scale(1.12); }
 .pin svg { display: block; }
-.pin-food { background: #f97316; }
-.pin-hotel { background: #6366f1; }
-.pin-attraction { background: #0ea5e9; }
-.pin-heritage { background: #a16207; }
-.pin-report { background: #fde047; color: #713f12; width: 26px; height: 26px; font-size: 13px; }
-.pin-report svg { width: 13px; height: 13px; }
-.pin-report.verified { background: #ef4444; color: #fff; animation: pulse 1.6s infinite; }
+.pin-food { background: linear-gradient(160deg, #fb923c, #ea580c); }
+.pin-hotel { background: linear-gradient(160deg, #818cf8, #4f46e5); }
+.pin-attraction { background: linear-gradient(160deg, #38bdf8, #0284c7); }
+.pin-heritage { background: linear-gradient(160deg, #ca8a04, #854d0e); }
+.pin-report { background: #fde047; color: #713f12; width: 28px; height: 28px; font-size: 13px; }
+.pin-report svg { width: 14px; height: 14px; }
+.pin-report.verified { background: #dc2626; color: #fff; animation: pulse 1.6s infinite; }
 .pin-endpoint { background: #0f172a; color: #fff; font-weight: 700; font-size: 13px; }
-.pin-selected { transform: scale(1.25); border-color: #0f172a; }
+.pin-selected { transform: scale(1.3); border-color: #0f172a; }
 
 @keyframes pulse {
   0% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0.6); }
@@ -59,7 +107,25 @@ body {
   100% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0); }
 }
 
-.leaflet-popup-content { margin: 12px 14px; }
-.leaflet-popup-content-wrapper { border-radius: 12px; }
-.leaflet-container { font-family: inherit; }
+/* ---------- Leaflet skin ---------- */
+.leaflet-container { font-family: inherit; background: #f2efe9; }
+.leaflet-tile-pane { filter: saturate(0.6) brightness(1.03) contrast(0.95); }
+.leaflet-popup-content { margin: 14px 16px; }
+.leaflet-popup-content-wrapper { border-radius: 16px; box-shadow: var(--clay-shadow); }
+.leaflet-popup-tip { box-shadow: none; }
+.leaflet-bar { border: none !important; border-radius: 12px !important; overflow: hidden; box-shadow: var(--clay-shadow) !important; }
+.leaflet-bar a { width: 36px !important; height: 36px !important; line-height: 36px !important; color: #0f172a !important; border-bottom-color: #e2e8f0 !important; }
+.leaflet-bar a:hover { background: #fff7ed !important; }
+.leaflet-control-attribution { border-radius: 8px 0 0 0; background: rgb(255 255 255 / 0.85) !important; color: #334155 !important; }
+.leaflet-control-attribution a { color: #9a3412 !important; }
+.leaflet-marker-icon:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 9999px; }
 .picking .leaflet-container { cursor: crosshair; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

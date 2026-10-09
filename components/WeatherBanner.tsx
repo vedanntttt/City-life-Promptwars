@@ -54,10 +54,10 @@ export default function WeatherBanner() {
       .catch(() => setFailed(true));
   }, []);
 
-  if (failed) return <div className="px-4 py-2 text-xs text-slate-500">Live weather unavailable</div>;
+  if (failed) return <div className="mx-3 rounded-xl px-3 py-2 text-xs text-slate-600">Live weather unavailable</div>;
   if (!w)
     return (
-      <div className="flex items-center gap-2 bg-sky-50 px-4 py-2 text-xs text-sky-900/60">
+      <div className="mx-3 flex items-center gap-2 rounded-xl bg-sky-50 px-3 py-2 text-xs text-sky-900">
         <span className="h-3 w-24 animate-pulse rounded bg-sky-200" /> Loading live Pune weather…
       </div>
     );
@@ -65,17 +65,17 @@ export default function WeatherBanner() {
   const alert = alertFor(w);
   const [Icon, label] = describe(w.code);
   return (
-    <div className={`px-4 py-2 text-sm ${alert ? "bg-amber-100 text-amber-900" : "bg-sky-50 text-sky-900"}`}>
+    <div role="status" className={`mx-3 rounded-xl border px-3 py-2 text-sm ${alert ? "border-amber-200 bg-amber-50 text-amber-950" : "border-sky-100 bg-sky-50 text-sky-950"}`}>
       <div className="flex items-center gap-1.5">
-        <Icon className="h-4 w-4 shrink-0" />
+        <Icon className="h-4 w-4 shrink-0" aria-hidden />
         <span className="font-medium">
           {label} · {Math.round(w.temp)}°C
         </span>
-        <span className="text-xs opacity-75">· wind {Math.round(w.wind)} km/h · live</span>
+        <span className="text-xs">· wind {Math.round(w.wind)} km/h · live</span>
       </div>
       {alert && (
         <div className="mt-0.5 flex items-start gap-1.5 text-xs font-medium">
-          <TriangleAlert className="mt-px h-3.5 w-3.5 shrink-0" /> {alert}
+          <TriangleAlert className="mt-px h-3.5 w-3.5 shrink-0" aria-hidden /> {alert}
         </div>
       )}
     </div>

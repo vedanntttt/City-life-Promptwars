@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import {
   ArrowUpDown,
   BedDouble,
@@ -66,9 +66,9 @@ export function ExplorePanel(props: {
             key={c.key}
             onClick={() => toggle(c.key)}
             aria-pressed={f.cats.has(c.key)}
-            className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors ${f.cats.has(c.key) ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-600 hover:border-slate-400"}`}
+            className={`flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium shadow-sm transition-all ${f.cats.has(c.key) ? "border-slate-900 bg-slate-900 text-white shadow-slate-900/20" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`}
           >
-            <c.Icon className="h-3.5 w-3.5" /> {c.label} <span className="opacity-60">{props.counts[c.key]}</span>
+            <c.Icon className="h-3.5 w-3.5" aria-hidden /> {c.label} <span className="opacity-80">{props.counts[c.key]}</span>
           </button>
         ))}
       </div>
@@ -77,7 +77,8 @@ export function ExplorePanel(props: {
         <select
           value={f.area}
           onChange={(e) => setF({ ...f, area: e.target.value })}
-          className="flex-1 rounded border border-slate-300 bg-white px-2 py-1.5 text-sm"
+          aria-label="Filter by area"
+          className="field min-w-0 flex-1"
         >
           <option value="">All areas</option>
           {props.areaNames.map((a) => (
@@ -87,7 +88,8 @@ export function ExplorePanel(props: {
         <select
           value={f.maxPrice}
           onChange={(e) => setF({ ...f, maxPrice: Number(e.target.value) })}
-          className="rounded border border-slate-300 bg-white px-2 py-1.5 text-sm"
+          aria-label="Filter by budget"
+          className="field"
         >
           <option value={3}>Any budget</option>
           <option value={1}>₹ Budget</option>
@@ -95,44 +97,44 @@ export function ExplorePanel(props: {
         </select>
       </div>
 
-      <div className="flex gap-4 text-sm">
+      <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-700">
         <label className="flex items-center gap-1.5">
-          <input type="checkbox" checked={f.showBlackspots} onChange={(e) => setF({ ...f, showBlackspots: e.target.checked })} />
+          <input type="checkbox" className="h-4 w-4 accent-orange-600" checked={f.showBlackspots} onChange={(e) => setF({ ...f, showBlackspots: e.target.checked })} />
           Accident zones
         </label>
         <label className="flex items-center gap-1.5">
-          <input type="checkbox" checked={f.showReports} onChange={(e) => setF({ ...f, showReports: e.target.checked })} />
+          <input type="checkbox" className="h-4 w-4 accent-orange-600" checked={f.showReports} onChange={(e) => setF({ ...f, showReports: e.target.checked })} />
           Citizen reports
         </label>
       </div>
 
       <div>
-        <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="eyebrow mb-2" role="status" aria-live="polite">
           {props.results.length} {props.results.length === 1 ? "place" : "places"}
         </div>
-        <ul className="divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <ul className="card divide-y divide-slate-100 overflow-hidden">
           {props.results.length === 0 && (
-            <li className="p-4 text-center text-sm text-slate-500">
-              <SearchX className="mx-auto mb-1 h-6 w-6 text-slate-400" />
+            <li className="p-4 text-center text-sm text-slate-600">
+              <SearchX className="mx-auto mb-1 h-6 w-6 text-slate-400" aria-hidden />
               No places match these filters.
-              <button onClick={props.onReset} className="mt-2 block w-full text-sm font-medium text-orange-600 hover:underline">
+              <button onClick={props.onReset} className="mt-2 block w-full text-sm font-semibold text-orange-700 hover:underline">
                 Reset filters
               </button>
             </li>
           )}
           {props.results.map((p) => (
             <li key={p.id}>
-              <button onClick={() => props.onPick(p)} className="w-full px-3 py-2.5 text-left transition-colors hover:bg-orange-50/60">
+              <button onClick={() => props.onPick(p)} className="w-full px-4 py-3 text-left transition-colors hover:bg-orange-50">
                 <div className="flex justify-between gap-2 text-sm font-medium">
                   <span className="flex min-w-0 items-center gap-2">
-                    <span className={`h-2 w-2 shrink-0 rounded-full ${CATS.find((c) => c.key === p.category)?.dot}`} />
+                    <span aria-hidden className={`h-2.5 w-2.5 shrink-0 rounded-full ${CATS.find((c) => c.key === p.category)?.dot}`} />
                     {p.name}
                   </span>
-                  <span className="flex shrink-0 items-center gap-0.5 text-xs text-slate-500">
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> {p.rating}
+                  <span className="flex shrink-0 items-center gap-0.5 text-xs text-slate-600">
+                    <Star className="h-3 w-3 fill-amber-400 text-amber-500" aria-hidden /> <span className="sr-only">Rating</span> {p.rating}
                   </span>
                 </div>
-                <div className="truncate pl-4 text-xs text-slate-500">
+                <div className="truncate pl-[18px] text-xs text-slate-600">
                   {p.area} · <span className="text-emerald-700">{price(p.price)}</span> · {p.tags.join(", ")}
                 </div>
               </button>
@@ -142,11 +144,11 @@ export function ExplorePanel(props: {
       </div>
 
       {f.cats.has("heritage") && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-          <div className="mb-2 text-sm font-semibold text-amber-900">Local traditions</div>
+        <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-4 shadow-sm">
+          <h3 className="mb-2 text-sm font-semibold text-amber-900">Local traditions</h3>
           {TRADITIONS.map((t) => (
             <div key={t.name} className="mb-2 text-xs text-amber-900 last:mb-0">
-              <b>{t.name}</b> <span className="opacity-70">({t.when})</span>: {t.text}
+              <b>{t.name}</b> <span className="font-medium">({t.when})</span>: {t.text}
             </div>
           ))}
         </div>
@@ -182,15 +184,19 @@ function PointPicker(props: {
       () => setGpsErr("Location permission denied"),
     );
   };
+  const id = useId();
   const isCustom = props.value && !props.landmarks.some((l) => l.label === props.value!.label);
   return (
     <div>
-      <div className="mb-1 text-xs font-medium text-slate-500">{props.label}</div>
-      <div className="flex gap-1">
+      <label htmlFor={id} className="eyebrow mb-1 block">
+        {props.label}
+      </label>
+      <div className="flex gap-1.5">
         <select
+          id={id}
           value={props.value?.label ?? ""}
           onChange={(e) => props.onChange(props.landmarks.find((l) => l.label === e.target.value) ?? null)}
-          className="min-w-0 flex-1 rounded border border-slate-300 bg-white px-2 py-1.5 text-sm"
+          className="field min-w-0 flex-1"
         >
           <option value="">Choose a place…</option>
           {isCustom && <option>{props.value!.label}</option>}
@@ -206,25 +212,26 @@ function PointPicker(props: {
         </select>
         <button
           onClick={props.onPickMap}
-          title="Tap on map"
-          aria-label="Tap on map"
-          className={`rounded border px-2 ${props.picking ? "border-blue-600 bg-blue-600 text-white" : "border-slate-300 bg-white text-slate-600"}`}
+          title="Pick on map"
+          aria-label={`Pick ${props.label.toLowerCase()} on map`}
+          aria-pressed={props.picking}
+          className="btn-icon"
         >
-          <MapIcon className="h-4 w-4" />
+          <MapIcon className="h-4 w-4" aria-hidden />
         </button>
         {props.allowGps && (
           <button
             onClick={useGps}
             title="Use my location"
             aria-label="Use my location"
-            className="rounded border border-slate-300 bg-white px-2 text-slate-600"
+            className="btn-icon"
           >
-            <LocateFixed className="h-4 w-4" />
+            <LocateFixed className="h-4 w-4" aria-hidden />
           </button>
         )}
       </div>
       {props.picking && <div className="mt-1 text-xs text-blue-700">Tap anywhere on the map…</div>}
-      {gpsErr && <div className="mt-1 text-xs text-red-600">{gpsErr}</div>}
+      {gpsErr && <div role="alert" className="mt-1 text-xs text-red-700">{gpsErr}</div>}
     </div>
   );
 }
@@ -263,10 +270,10 @@ export function RoutePanel(props: {
         <button
           onClick={props.onSwap}
           disabled={!props.from && !props.to}
-          title="Swap start and destination"
-          className="flex items-center gap-1 rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-xs text-slate-600 hover:border-slate-400 disabled:opacity-40"
+          aria-label="Swap start and destination"
+          className="flex min-h-[32px] items-center gap-1 rounded-full border border-slate-300 bg-white px-3 text-xs font-medium text-slate-700 shadow-sm hover:border-slate-400 disabled:opacity-40"
         >
-          <ArrowUpDown className="h-3 w-3" /> Swap
+          <ArrowUpDown className="h-3 w-3" aria-hidden /> Swap
         </button>
       </div>
       <PointPicker
@@ -280,7 +287,8 @@ export function RoutePanel(props: {
       <button
         disabled={!props.from || !props.to || props.loading}
         onClick={props.onFind}
-        className="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-40"
+        aria-busy={props.loading}
+        className="btn-primary"
       >
         {props.loading ? (
           <>
@@ -291,7 +299,7 @@ export function RoutePanel(props: {
         )}
       </button>
       {props.error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
           {props.error}{" "}
           <button onClick={props.onFind} className="font-medium underline">
             Try again
@@ -300,17 +308,17 @@ export function RoutePanel(props: {
       )}
 
       {props.loading &&
-        [0, 1].map((i) => <div key={i} className="h-20 animate-pulse rounded-lg border border-slate-200 bg-white" />)}
+        [0, 1].map((i) => <div key={i} aria-hidden className="card h-20 animate-pulse" />)}
 
       {!props.loading && !props.error && routes.length === 0 && (
-        <div className="rounded-lg border border-dashed border-slate-300 p-4 text-center text-sm text-slate-500">
-          <ShieldCheck className="mx-auto mb-1 h-6 w-6 text-slate-400" />
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white/50 p-5 text-center text-sm text-slate-600">
+          <ShieldCheck className="mx-auto mb-1 h-7 w-7 text-orange-500" aria-hidden />
           Pick a start and destination. We compare routes against accident blackspots and live citizen reports.
         </div>
       )}
 
       {routes.length > 0 && fast && safe && (
-        <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900">
+        <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
           {safestIdx === fastestIdx ? (
             <>Good news: the fastest route is also the safest one.</>
           ) : (
@@ -333,20 +341,20 @@ export function RoutePanel(props: {
       {routes.map((r, i) => (
         <div
           key={i}
-          className={`rounded-lg border bg-white p-3 text-sm ${i === safestIdx ? "border-emerald-500" : i === fastestIdx ? "border-red-400" : "border-slate-200"}`}
+          className={`card p-4 text-sm ${i === safestIdx ? "!border-emerald-500 ring-1 ring-emerald-500" : i === fastestIdx ? "!border-red-400" : ""}`}
         >
           <div className="flex items-center justify-between">
             <div className="font-medium">
               {r.durationMin} min · {r.distanceKm} km
             </div>
             <div className="flex gap-1">
-              {i === fastestIdx && <span className="rounded bg-red-100 px-1.5 text-xs text-red-700">FASTEST</span>}
-              {i === safestIdx && <span className="rounded bg-emerald-100 px-1.5 text-xs text-emerald-700">SAFEST</span>}
+              {i === fastestIdx && <span className="badge bg-red-100 text-red-800">FASTEST</span>}
+              {i === safestIdx && <span className="badge bg-emerald-100 text-emerald-800">SAFEST</span>}
             </div>
           </div>
-          <div className="text-xs text-slate-500">Risk score: {r.risk}</div>
+          <div className="text-xs text-slate-600">Risk score: {r.risk}</div>
           {r.hazards.length > 0 ? (
-            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-slate-700 marker:text-red-400">
+            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-slate-700 marker:text-red-500">
               {r.hazards.map((h) => (
                 <li key={h}>{h}</li>
               ))}
@@ -356,7 +364,7 @@ export function RoutePanel(props: {
           )}
         </div>
       ))}
-      <p className="text-[11px] text-slate-400">
+      <p className="text-[11px] text-slate-600">
         Risk = accident blackspots within 250 m of the route (weighted by severity) + citizen reports (verified ones count 4× more).
       </p>
     </div>
@@ -436,7 +444,12 @@ export function ReportPanel(props: {
   return (
     <div className="space-y-3">
       <div className="relative">
+        <label htmlFor="report-text" className="eyebrow mb-1 block">
+          What&apos;s the issue?
+        </label>
         <textarea
+          id="report-text"
+          maxLength={500}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
@@ -444,33 +457,36 @@ export function ReportPanel(props: {
           }}
           rows={3}
           placeholder="e.g. Big pothole and no streetlight near Katraj chowk"
-          className="w-full rounded-lg border border-slate-300 bg-white p-2.5 pr-11 text-sm"
+          className="field w-full rounded-2xl p-3 pr-12"
         />
         <button
           onClick={startVoice}
           title={listening ? "Stop listening" : "Speak your report"}
           aria-label={listening ? "Stop listening" : "Speak your report"}
-          className={`absolute right-2 top-2 rounded-full p-1.5 ${listening ? "animate-pulse bg-red-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+          aria-pressed={listening}
+          className={`absolute right-2 top-8 flex h-9 w-9 items-center justify-center rounded-full shadow-sm ${listening ? "animate-pulse bg-red-600 text-white" : "bg-orange-50 text-orange-700 hover:bg-orange-100"}`}
         >
-          <Mic className="h-4 w-4" />
+          <Mic className="h-4 w-4" aria-hidden />
         </button>
-        {listening && <div className="mt-1 text-xs font-medium text-red-600">● Listening… tap the mic again to stop</div>}
+        <div aria-live="polite">{listening && <div className="mt-1 text-xs font-medium text-red-700">● Listening… tap the mic again to stop</div>}</div>
       </div>
       <div className="flex items-center gap-2 text-xs">
         <button
           onClick={() => props.setPicking(!props.picking)}
-          className={`flex items-center gap-1 rounded border px-2 py-1 ${props.picking ? "border-blue-600 bg-blue-600 text-white" : "border-slate-300 bg-white"}`}
+          aria-pressed={props.picking}
+          className="btn-icon gap-1 px-3 text-xs font-medium"
         >
-          <MapIcon className="h-3.5 w-3.5" /> {props.pin ? "Move pin" : "Pin on map"}
+          <MapIcon className="h-3.5 w-3.5" aria-hidden /> {props.pin ? "Move pin" : "Pin on map"}
         </button>
-        <span className="text-slate-500">
+        <span className="text-slate-600">
           {props.picking ? "Tap the map…" : props.pin ? "Location pinned" : "or just mention a landmark: AI will locate it"}
         </span>
       </div>
       <button
         disabled={!text.trim() || busy}
         onClick={submit}
-        className="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-40"
+        aria-busy={busy}
+        className="btn-primary"
       >
         {busy ? (
           <>
@@ -480,20 +496,21 @@ export function ReportPanel(props: {
           "Submit report"
         )}
       </button>
-      {err && <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{err}</div>}
+      {err && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{err}</div>}
 
       {result && (
         <div
-          className={`rounded-lg border p-3 text-sm ${result.report.verified ? "border-red-200 bg-red-50" : "border-emerald-200 bg-emerald-50"}`}
+          role="status"
+          className={`rounded-xl border p-3 text-sm ${result.report.verified ? "border-red-200 bg-red-50" : "border-emerald-200 bg-emerald-50"}`}
         >
-          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">✓ Report submitted</div>
+          <div className="eyebrow mb-1">✓ Report submitted</div>
           <div className="font-medium">
             Classified as <b>{result.report.category}</b> · severity <b className="uppercase">{result.report.severity}</b>
           </div>
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-slate-600">
             {result.classifiedBy === "groq" ? "AI (open-source LLM via Groq)" : "Keyword fallback"} · located from {result.locatedBy}
           </div>
-          <div className={`mt-1 text-sm ${result.report.verified ? "text-red-600" : "text-slate-600"}`}>
+          <div className={`mt-1 text-sm ${result.report.verified ? "font-semibold text-red-700" : "text-slate-700"}`}>
             {result.report.verified
               ? `VERIFIED: ${result.report.nearbyCount} independent reports within 300 m`
               : `Unverified: ${result.report.nearbyCount}/3 reports nearby`}
@@ -502,27 +519,27 @@ export function ReportPanel(props: {
       )}
 
       <div>
-        <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" /> Live citizen feed
+        <h3 className="eyebrow mb-2 flex items-center gap-1.5">
+          <span aria-hidden className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" /> Live citizen feed
           {!props.loadingReports && <span className="font-normal normal-case">· {sorted.length}</span>}
-        </div>
-        <ul className="divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200 bg-white">
+        </h3>
+        <ul aria-busy={props.loadingReports} className="card divide-y divide-slate-100 overflow-hidden">
           {props.loadingReports && (
-            <li className="flex items-center gap-2 p-3 text-sm text-slate-500">
+            <li className="flex items-center gap-2 p-3 text-sm text-slate-600">
               <span className="spinner" /> Loading reports…
             </li>
           )}
           {!props.loadingReports && sorted.length === 0 && (
-            <li className="p-4 text-center text-sm text-slate-500">No reports yet. Be the first to flag an issue.</li>
+            <li className="p-4 text-center text-sm text-slate-600">No reports yet. Be the first to flag an issue.</li>
           )}
           {sorted.map((r) => (
             <li key={r.id}>
-              <button onClick={() => props.onFocus(r)} className="w-full px-3 py-2.5 text-left transition-colors hover:bg-orange-50/60">
+              <button onClick={() => props.onFocus(r)} className="w-full px-4 py-3 text-left transition-colors hover:bg-orange-50">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{r.summary}</span>
-                  {r.verified && <span className="ml-2 shrink-0 rounded bg-red-100 px-1.5 text-xs text-red-700">VERIFIED</span>}
+                  {r.verified && <span className="badge ml-2 shrink-0 bg-red-100 text-red-800">VERIFIED</span>}
                 </div>
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-slate-600">
                   {r.category} · {r.severity} · {timeAgo(r.createdAt)}
                 </div>
               </button>
@@ -549,8 +566,8 @@ const METRICS: { key: keyof Area; label: string }[] = [
 export function AreasPanel(props: { areas: ScoredArea[]; onPick: (a: Area) => void }) {
   const n = props.areas.length;
   return (
-    <div className="space-y-2">
-      <p className="text-xs text-slate-500">
+    <div className="space-y-3">
+      <p className="text-xs text-slate-600">
         Ranked by a weighted score: safety 30%, cleanliness 20%, rating 20%, affordability 15%, accessibility 15%. Safety
         drops automatically when verified citizen reports appear nearby.
       </p>
@@ -560,21 +577,21 @@ export function AreasPanel(props: { areas: ScoredArea[]; onPick: (a: Area) => vo
           <button
             key={a.name}
             onClick={() => props.onPick(a)}
-            className={`w-full rounded-lg border bg-white p-3 text-left transition-shadow hover:shadow-md ${tier === "best" ? "border-emerald-400" : tier === "worst" ? "border-red-300" : "border-slate-200"}`}
+            className={`card w-full p-4 text-left transition-transform hover:-translate-y-0.5 ${tier === "best" ? "!border-emerald-400" : tier === "worst" ? "!border-red-300" : ""}`}
           >
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold">
                 #{i + 1} {a.name}
               </div>
-              <div className={`text-lg font-bold ${tier === "best" ? "text-emerald-600" : tier === "worst" ? "text-red-600" : "text-slate-700"}`}>
+              <div className={`text-xl font-bold tabular-nums ${tier === "best" ? "text-emerald-700" : tier === "worst" ? "text-red-700" : "text-slate-800"}`}>
                 {a.score}
               </div>
             </div>
-            <div className="mb-2 text-xs text-slate-500">
+            <div className="mb-2 text-xs text-slate-600">
               {tier === "best" ? (
                 <span className="font-medium text-emerald-700">Best · </span>
               ) : tier === "worst" ? (
-                <span className="font-medium text-red-600">Needs work · </span>
+                <span className="font-medium text-red-700">Needs work · </span>
               ) : null}
               {a.note}
               {a.openReports > 0 && ` · ${a.openReports} reports nearby`}
@@ -584,13 +601,13 @@ export function AreasPanel(props: { areas: ScoredArea[]; onPick: (a: Area) => vo
                 const v = a[m.key] as number;
                 return (
                   <div key={m.key}>
-                    <div className="h-1.5 rounded bg-slate-100">
+                    <div className="h-1.5 rounded-full bg-slate-100" aria-hidden>
                       <div
-                        className={`h-1.5 rounded ${v >= 7.5 ? "bg-emerald-500" : v >= 6 ? "bg-amber-400" : "bg-red-500"}`}
+                        className={`h-1.5 rounded-full ${v >= 7.5 ? "bg-emerald-500" : v >= 6 ? "bg-amber-400" : "bg-red-500"}`}
                         style={{ width: `${v * 10}%` }}
                       />
                     </div>
-                    <div className="mt-0.5 text-[10px] text-slate-500">
+                    <div className="mt-0.5 text-[10px] text-slate-600">
                       {m.label} {v}
                     </div>
                   </div>

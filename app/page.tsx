@@ -136,37 +136,73 @@ export default function Home() {
     setPicking(null);
   };
 
+  // WAI-ARIA tabs pattern: arrow keys move between tabs, Home/End jump to the ends.
+  const onTabKey = (e: React.KeyboardEvent, i: number) => {
+    const n = TABS.length;
+    const next =
+      e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+    if (next < 0) return;
+    e.preventDefault();
+    switchTab(TABS[next].key);
+    document.getElementById(`tab-${TABS[next].key}`)?.focus();
+  };
+
   return (
-    <main className="flex h-[100dvh] flex-col md:flex-row">
-      <aside className="order-2 flex min-h-0 flex-1 flex-col border-slate-200 bg-slate-50 md:order-1 md:w-[400px] md:flex-none md:border-r">
-        <header className="flex items-center gap-2.5 border-b border-slate-200 bg-white px-4 py-2.5 md:py-3">
-          <Logo className="h-9 w-9 shrink-0 rounded-[9px] shadow-sm" />
+    <div className="flex h-[100dvh] flex-col md:flex-row md:gap-3 md:p-3">
+      <a
+        href="#panel"
+        className="sr-only-focusable fixed left-3 top-3 z-[2000] rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+      >
+        Skip to content
+      </a>
+      <aside
+        aria-label="PuneSathi controls"
+        className="order-2 flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--bg)] md:card md:order-1 md:w-[410px] md:flex-none md:bg-white"
+      >
+        <header className="flex items-center gap-3 px-4 pb-2 pt-3 md:pt-4">
+          <Logo className="h-10 w-10 shrink-0 rounded-xl shadow-md shadow-orange-900/20" />
           <div className="min-w-0">
-            <h1 className="text-lg font-bold leading-tight tracking-tight">
-              Pune<span className="text-orange-500">Sathi</span>
+            <h1 className="text-xl font-bold leading-tight tracking-tight">
+              Pune<span className="text-orange-600">Sathi</span>
             </h1>
-            <p className="truncate text-xs text-slate-500">Explore Pune smarter, safer and on budget</p>
+            <p className="truncate text-xs text-slate-600">Explore Pune smarter, safer and on budget</p>
           </div>
         </header>
         <WeatherBanner />
-        <nav className="grid grid-cols-4 border-b border-slate-200 bg-white text-xs">
-          {TABS.map((t) => (
+        <div
+          role="tablist"
+          aria-label="Features"
+          className="mx-3 mb-1 mt-2 grid grid-cols-4 gap-1 rounded-2xl bg-slate-100 p-1 text-xs"
+        >
+          {TABS.map((t, i) => (
             <button
               key={t.key}
+              id={`tab-${t.key}`}
+              role="tab"
+              aria-selected={tab === t.key}
+              aria-controls="panel"
+              tabIndex={tab === t.key ? 0 : -1}
               onClick={() => switchTab(t.key)}
-              aria-current={tab === t.key ? "page" : undefined}
-              className={`flex flex-col items-center gap-0.5 border-b-2 px-1 py-2 font-medium transition-colors sm:flex-row sm:justify-center sm:gap-1 sm:py-2.5 ${
+              onKeyDown={(e) => onTabKey(e, i)}
+              className={`flex min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 font-semibold transition-all sm:flex-row sm:gap-1.5 ${
                 tab === t.key
-                  ? "border-orange-500 text-slate-900"
-                  : "border-transparent text-slate-500 hover:text-slate-800"
+                  ? "bg-white text-slate-900 shadow-md shadow-slate-900/10"
+                  : "text-slate-600 hover:bg-white/60 hover:text-slate-900"
               }`}
             >
-              <t.Icon className="h-4 w-4" strokeWidth={2} />
+              <t.Icon className={`h-4 w-4 ${tab === t.key ? "text-orange-600" : ""}`} strokeWidth={2.25} aria-hidden />
               <span className="whitespace-nowrap">{t.label}</span>
             </button>
           ))}
-        </nav>
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        </div>
+        <main
+          id="panel"
+          role="tabpanel"
+          aria-labelledby={`tab-${tab}`}
+          tabIndex={-1}
+          className="min-h-0 flex-1 overflow-y-auto p-4 focus:outline-none"
+        >
+          <h2 className="sr-only">{TABS.find((t) => t.key === tab)?.label}</h2>
           {tab === "explore" && (
             <ExplorePanel
               f={filters}
@@ -218,10 +254,13 @@ export default function Home() {
             />
           )}
           {tab === "areas" && <AreasPanel areas={ranked} onPick={(a) => flyTo(a.lat, a.lng, 14)} />}
-        </div>
+        </main>
       </aside>
 
-      <section className="relative order-1 h-[45dvh] md:order-2 md:h-auto md:flex-1">
+      <section
+        aria-label="Interactive map of Pune"
+        className="relative order-1 h-[45dvh] overflow-hidden md:order-2 md:h-auto md:flex-1 md:rounded-2xl md:shadow-[var(--clay-shadow)]"
+      >
         <MapView
           places={filtered}
           selected={selected}
@@ -243,14 +282,16 @@ export default function Home() {
             switchTab("route");
           }}
         />
-        {picking && (
-          <div className="pointer-events-none absolute left-1/2 top-3 z-[1000] -translate-x-1/2 whitespace-nowrap rounded-full bg-blue-600 px-4 py-1.5 text-sm text-white shadow">
-            Tap the map to set {picking === "report" ? "report location" : picking === "from" ? "start" : "destination"}
-          </div>
-        )}
+        <div role="status" aria-live="polite">
+          {picking && (
+            <div className="pointer-events-none absolute left-1/2 top-3 z-[1000] -translate-x-1/2 whitespace-nowrap rounded-full bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-lg">
+              Tap the map to set {picking === "report" ? "report location" : picking === "from" ? "start" : "destination"}
+            </div>
+          )}
+        </div>
         <MapLegend tab={tab} />
       </section>
-    </main>
+    </div>
   );
 }
 
@@ -272,13 +313,16 @@ function MapLegend({ tab }: { tab: Tab }) {
           { swatch: "h-3 w-3 rounded-full bg-red-500", label: "Verified" },
         ];
   return (
-    <div className="pointer-events-none absolute bottom-6 left-2 z-[1000] flex max-w-[calc(100%-1rem)] flex-wrap gap-x-2.5 gap-y-1 rounded-lg bg-white/90 px-2.5 py-1.5 text-[11px] text-slate-700 shadow backdrop-blur">
+    <ul
+      aria-label="Map legend"
+      className="pointer-events-none absolute bottom-6 left-3 z-[1000] flex max-w-[calc(100%-1.5rem)] flex-wrap gap-x-3 gap-y-1 rounded-xl border border-black/5 bg-white/90 px-3 py-2 text-[11px] font-medium text-slate-800 shadow-[var(--clay-shadow)] backdrop-blur"
+    >
       {items.map((i) => (
-        <span key={i.label} className="flex items-center gap-1">
-          <span className={i.swatch} />
+        <li key={i.label} className="flex items-center gap-1">
+          <span className={i.swatch} aria-hidden />
           {i.label}
-        </span>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 import {
   Construction,
   Droplets,
@@ -96,11 +96,14 @@ export default function MapView(p: Props) {
 
   return (
     <div className={`h-full w-full ${p.picking ? "picking" : ""}`}>
-      <MapContainer center={PUNE} zoom={13} className="h-full w-full" zoomControl>
+      <MapContainer center={PUNE} zoom={13} className="h-full w-full" zoomControl={false}>
+        {/* Free OSM tiles (no API key); softened with a CSS filter in globals.css so pins stand out. */}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        <ZoomControl position="bottomright" />
         <ClickHandler onClick={p.onMapClick} />
         <FlyTo focus={p.focus} />
         <FitRoutes routes={p.routes} />
@@ -133,6 +136,8 @@ export default function MapView(p: Props) {
             key={pl.id}
             position={[pl.lat, pl.lng]}
             icon={icon(`pin-${pl.category} ${p.selected?.id === pl.id ? "pin-selected" : ""}`, svg(catIcon(pl.category)))}
+            title={`${pl.name} (${pl.category})`}
+            alt={pl.name}
             eventHandlers={{ click: () => p.onSelect(pl) }}
           />
         ))}
@@ -146,21 +151,21 @@ export default function MapView(p: Props) {
           >
             <div className="w-56 space-y-1 text-sm">
               <div className="text-base font-semibold">{p.selected.name}</div>
-              <div className="flex items-center gap-1 text-xs text-slate-500">
+              <div className="flex items-center gap-1 text-xs text-slate-600">
                 {p.selected.area} · <span className="text-emerald-700">{price(p.selected.price)}</span> ·
                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> {p.selected.rating}
               </div>
               <p className="!my-1 text-slate-700">{p.selected.desc}</p>
               <div className="flex flex-wrap gap-1">
                 {p.selected.tags.map((t) => (
-                  <span key={t} className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px]">
+                  <span key={t} className="rounded-md bg-orange-50 px-1.5 py-0.5 text-[11px] text-orange-900">
                     {t}
                   </span>
                 ))}
               </div>
               <button
                 onClick={() => p.onRouteHere(p.selected!)}
-                className="mt-1 w-full rounded bg-slate-900 py-1 text-xs font-medium text-white"
+                className="btn-primary mt-2 !min-h-[36px] text-xs"
               >
                 Safe route here
               </button>
@@ -173,25 +178,26 @@ export default function MapView(p: Props) {
             key={r.id}
             position={[r.lat, r.lng]}
             icon={icon(`pin-report ${r.verified ? "verified" : ""}`, svg(REPORT_ICON[r.category] ?? FileText))}
+            title={`${r.verified ? "Verified" : "Unverified"} ${r.category} report: ${r.summary}`}
           >
             <Popup>
               <div className="w-52 text-sm">
                 <div className="font-semibold">
                   {r.category} · <span className="uppercase">{r.severity}</span>
                 </div>
-                <div className={r.verified ? "text-red-600" : "text-slate-500"}>
+                <div className={r.verified ? "text-red-700" : "text-slate-600"}>
                   {r.verified ? `Verified (${r.nearbyCount} reports nearby)` : `Unverified (${r.nearbyCount}/3 nearby)`}
                 </div>
                 <p className="!my-1 italic text-slate-700">&ldquo;{r.text}&rdquo;</p>
-                <div className="text-xs text-slate-400">{timeAgo(r.createdAt)}</div>
+                <div className="text-xs text-slate-600">{timeAgo(r.createdAt)}</div>
               </div>
             </Popup>
           </Marker>
         ))}
 
-        {p.from && <Marker position={p.from} icon={icon("pin-endpoint", "A")} />}
-        {p.to && <Marker position={p.to} icon={icon("pin-endpoint", "B")} />}
-        {p.reportPin && <Marker position={p.reportPin} icon={icon("pin-report", svg(MapPin))} />}
+        {p.from && <Marker position={p.from} icon={icon("pin-endpoint", "A")} title="Start" />}
+        {p.to && <Marker position={p.to} icon={icon("pin-endpoint", "B")} title="Destination" />}
+        {p.reportPin && <Marker position={p.reportPin} icon={icon("pin-report", svg(MapPin))} title="New report location" />}
       </MapContainer>
     </div>
   );
