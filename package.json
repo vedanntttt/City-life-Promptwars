@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@upstash/redis": "^1.39.0",
     "groq-sdk": "^1.6.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.54.0",

@@ -13,20 +13,20 @@ Plan: `C:\Users\Vedant\.claude\plans\check-the-problem-statement-humming-sedgewi
 - Map legend overlay at bottom left (place/report colours, or route colours on the Safe Route tab).
 - Route "⇅ Swap" button. Ctrl+Enter submits a report. "Listening…" hint for voice. Fixed the "0 min longer" banner wording.
 **Polish pass 2 done:** emojis replaced with `lucide-react` icons everywhere, including the map pins (rendered to SVG strings in `MapView.tsx`). The logo is now a Shaniwar Wada gate with a Bhagwa flag (`components/Logo.tsx`, plus `app/icon.svg` as the favicon; keep the two in sync). The route pickers group options into Areas and Places. Checked at 1440 px and 375 px.
-**Next:** check visually at desktop and 375 px width (the legend may wrap over the map on small phones), then Upstash. New features only if time is left; the optional one is a Groq "Tell me the story" button on heritage pins.
+**Next:** check visually at desktop and 375 px width (the legend may wrap over the map on small phones), then deploy. New features only if time is left; the optional one is a Groq "Tell me the story" button on heritage pins.
 
-## Deployment plan (decided, not yet done)
+## Deployment plan (store done; deploy not yet done)
 - **Vercel only**, with no separate backend: `app/api/reports` deploys as a serverless function.
 - **Problem:** the in-memory report store is unreliable on serverless (it resets and isn't shared between instances).
 - **Decision: use Upstash Redis** through the Vercel Marketplace, not Supabase (too much setup for the time; we don't need file storage, auth or live updates).
-  - Swap `globalThis.__reports` for a Redis list. **Keep the in-memory fallback** when the Upstash env vars are missing, so local dev still works.
+  - **Done:** `lib/reportStore.ts` keeps submitted reports in the Redis list `punesathi:reports` (capped at 500); seed reports stay in code. It reads `KV_REST_API_URL/TOKEN` or `UPSTASH_REDIS_REST_URL/TOKEN`, and falls back to memory when neither is set. The reports route is `force-dynamic` so Vercel never caches the GET.
   - The user clicks "Add Upstash" in the Vercel project, which injects the env vars.
 - Deploy steps: push to GitHub → import in Vercel → add `GROQ_API_KEY` in Vercel env vars → deploy.
 - Pitch line: "the production version would move to Supabase/PostGIS for geo-queries and photo storage."
 
 ## Suggested order for the next chat
 1. ~~Polish: UI, mobile layout, loading and empty states.~~ Done, except the visual check.
-2. Upstash Redis store (about 20 min).
+2. ~~Upstash Redis store.~~ Done (code side); add Upstash in Vercel.
 3. Deploy to Vercel (about 10 min).
 4. Rehearse the demo and record a backup video.
 
@@ -51,7 +51,7 @@ Main page and state: `app/page.tsx`. Leaflet is loaded with `dynamic(..., { ssr:
 ## Data (`data/`)
 - `places.json`: 57 curated places with **real OSM coordinates** (pulled by `scripts/fetch-osm.mjs` into `osm_raw.json`). Rating, price and description are our own sample values.
 - `blackspots.json` (9), `areas.json` (10), `reports.json` (5 seed reports, `minutesAgo`). All are sample data; say so in the pitch.
-- Reports are stored **in memory** (`globalThis.__reports`) and reset when the server restarts.
+- Submitted reports go to Upstash Redis when its env vars are set, otherwise to memory (reset when the server restarts). See `lib/reportStore.ts`.
 
 ## Gotchas learned
 - Groq retired `llama-3.3-70b-versatile`; the default is now `openai/gpt-oss-120b` (`lib/classify.ts`). If there's no key or Groq fails, a keyword classifier takes over (the UI shows "Keyword fallback").

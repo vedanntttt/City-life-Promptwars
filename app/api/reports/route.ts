@@ -1,22 +1,14 @@
 import { NextResponse } from "next/server";
-import seed from "@/data/reports.json";
 import places from "@/data/places.json";
 import blackspots from "@/data/blackspots.json";
 import areas from "@/data/areas.json";
 import { classifyReport } from "@/lib/classify";
 import { markVerified } from "@/lib/geo";
+import { addReport, listReports } from "@/lib/reportStore";
 import type { Report } from "@/lib/types";
 
-// In-memory store (survives dev hot-reloads via globalThis). Fine for a demo; swap for a DB later.
-const g = globalThis as unknown as { __reports?: Report[] };
-if (!g.__reports) {
-  g.__reports = seed.map(({ minutesAgo, ...r }) => ({
-    ...r,
-    severity: r.severity as Report["severity"],
-    createdAt: Date.now() - minutesAgo * 60_000,
-  }));
-}
-const store = () => g.__reports!;
+// Reports change on every POST, so never serve a cached GET.
+export const dynamic = "force-dynamic";
 
 const LANDMARKS = [...blackspots, ...places, ...areas].map((x) => ({
   name: x.name.toLowerCase(),
@@ -53,7 +45,7 @@ async function nominatim(hint: string): Promise<{ lat: number; lng: number } | n
 }
 
 export async function GET() {
-  return NextResponse.json(markVerified(store()));
+  return NextResponse.json(markVerified(await listReports()));
 }
 
 export async function POST(req: Request) {
@@ -82,8 +74,8 @@ export async function POST(req: Request) {
     lng: pos.lng,
     createdAt: Date.now(),
   };
-  store().push(report);
-  const all = markVerified(store());
+  await addReport(report);
+  const all = markVerified(await listReports());
   return NextResponse.json({
     report: all.find((r) => r.id === report.id),
     classifiedBy: c.source,
