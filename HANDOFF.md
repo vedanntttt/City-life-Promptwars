@@ -7,6 +7,21 @@ Plan: `C:\Users\Vedant\.claude\plans\check-the-problem-statement-humming-sedgewi
 **MVP is done and tested.** All 5 pillars work end to end. Lint and production build are clean.
 **Next phase:** polish (UI, mobile layout, loading states). New features only if time is left; the optional one is a Groq "Tell me the story" button on heritage pins.
 
+## Deployment plan (decided, not yet done)
+- **Vercel only**, with no separate backend: `app/api/reports` deploys as a serverless function.
+- **Problem:** the in-memory report store is unreliable on serverless (it resets and isn't shared between instances).
+- **Decision: use Upstash Redis** through the Vercel Marketplace, not Supabase (too much setup for the time; we don't need file storage, auth or live updates).
+  - Swap `globalThis.__reports` for a Redis list. **Keep the in-memory fallback** when the Upstash env vars are missing, so local dev still works.
+  - The user clicks "Add Upstash" in the Vercel project, which injects the env vars.
+- Deploy steps: push to GitHub → import in Vercel → add `GROQ_API_KEY` in Vercel env vars → deploy.
+- Pitch line: "the production version would move to Supabase/PostGIS for geo-queries and photo storage."
+
+## Suggested order for the next chat
+1. Polish: UI, mobile layout, loading and empty states.
+2. Upstash Redis store (about 20 min).
+3. Deploy to Vercel (about 10 min).
+4. Rehearse the demo and record a backup video.
+
 ## Run
 ```
 cd punesathi
