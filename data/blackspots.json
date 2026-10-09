@@ -1,0 +1,11 @@
+[
+  { "id": "b1", "name": "Navale Bridge (Mumbai–Bengaluru Highway)", "lat": 18.4593, "lng": 73.8158, "severity": 3, "reason": "Steep downhill slope; repeated heavy-vehicle brake failures and pile-ups" },
+  { "id": "b2", "name": "Katraj Chowk", "lat": 18.451, "lng": 73.8579, "severity": 3, "reason": "Heavy mixed traffic, highway merge and pedestrian crossings" },
+  { "id": "b3", "name": "Chandni Chowk", "lat": 18.5086, "lng": 73.7856, "severity": 2, "reason": "Complex highway interchange, high-speed merges" },
+  { "id": "b4", "name": "Bhumkar Chowk, Wakad", "lat": 18.5978, "lng": 73.7633, "severity": 2, "reason": "Peak-hour IT traffic and service-road merges" },
+  { "id": "b5", "name": "Swargate Chowk", "lat": 18.5018, "lng": 73.8636, "severity": 2, "reason": "Bus depot exit, crowded junction" },
+  { "id": "b6", "name": "University Chowk", "lat": 18.5359, "lng": 73.8297, "severity": 2, "reason": "Long-running construction and congestion" },
+  { "id": "b7", "name": "Hadapsar Gadital", "lat": 18.5018, "lng": 73.9405, "severity": 2, "reason": "Solapur Road congestion and heavy vehicles" },
+  { "id": "b8", "name": "Wadgaon Bridge, Sinhagad Road", "lat": 18.4757, "lng": 73.8167, "severity": 2, "reason": "Highway crossing with poor lighting at night" },
+  { "id": "b9", "name": "Kharadi Bypass", "lat": 18.5476, "lng": 73.9341, "severity": 1, "reason": "Fast traffic on the bypass, frequent lane-cutting" }
+]

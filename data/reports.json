@@ -1,0 +1,7 @@
+[
+  { "id": "r1", "text": "Huge pothole near Katraj chowk, two bikers skidded this morning", "category": "Road", "severity": "high", "summary": "Large pothole causing bike skids", "lat": 18.4515, "lng": 73.8572, "minutesAgo": 120 },
+  { "id": "r2", "text": "Streetlights not working at Katraj chowk signal, very dark at night", "category": "Lighting", "severity": "medium", "summary": "Streetlights out at signal", "lat": 18.4506, "lng": 73.8586, "minutesAgo": 300 },
+  { "id": "r3", "text": "Garbage piled up outside the vegetable market in Tulshibaug", "category": "Garbage", "severity": "medium", "summary": "Garbage pile near market", "lat": 18.5141, "lng": 73.8551, "minutesAgo": 180 },
+  { "id": "r4", "text": "Waterlogging under the Hinjewadi flyover after the rain, cars stuck", "category": "Flooding", "severity": "high", "summary": "Waterlogging under flyover", "lat": 18.5925, "lng": 73.7385, "minutesAgo": 60 },
+  { "id": "r5", "text": "Massive traffic jam at University chowk, not moving for 30 min", "category": "Traffic", "severity": "medium", "summary": "30-min jam at the junction", "lat": 18.5362, "lng": 73.8301, "minutesAgo": 30 }
+]

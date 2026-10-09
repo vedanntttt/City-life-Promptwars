@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  font-size: 15px;
+  line-height: 1;
+}
+.pin-food { background: #f97316; }
+.pin-hotel { background: #6366f1; }
+.pin-attraction { background: #0ea5e9; }
+.pin-heritage { background: #a16207; }
+.pin-report { background: #fde047; width: 26px; height: 26px; font-size: 13px; }
+.pin-report.verified { background: #ef4444; animation: pulse 1.6s infinite; }
+.pin-endpoint { background: #0f172a; color: #fff; font-weight: 700; font-size: 13px; }
+.pin-selected { transform: scale(1.25); border-color: #0f172a; }
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0.6); }
+  70% { box-shadow: 0 0 0 12px rgb(239 68 68 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0); }
+}
+
+.leaflet-popup-content { margin: 12px 14px; }
+.picking .leaflet-container { cursor: crosshair; }

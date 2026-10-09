@@ -1,0 +1,12 @@
+[
+  { "name": "Koregaon Park", "lat": 18.5385, "lng": 73.893, "safety": 7.5, "cleanliness": 8, "affordability": 4, "rating": 8.5, "accessibility": 7.5, "note": "Leafy, upscale, great cafés but pricey" },
+  { "name": "Deccan & FC Road", "lat": 18.5195, "lng": 73.841, "safety": 7.5, "cleanliness": 6.5, "affordability": 7.5, "rating": 8.5, "accessibility": 8.5, "note": "Student hub, iconic food, very central" },
+  { "name": "Peth Areas", "lat": 18.516, "lng": 73.8555, "safety": 7, "cleanliness": 5.5, "affordability": 8.5, "rating": 8, "accessibility": 6, "note": "Old city heritage, narrow crowded lanes" },
+  { "name": "Camp", "lat": 18.513, "lng": 73.879, "safety": 7, "cleanliness": 6.5, "affordability": 6.5, "rating": 8, "accessibility": 7.5, "note": "MG Road shopping, Irani cafés" },
+  { "name": "Kothrud", "lat": 18.505, "lng": 73.816, "safety": 8, "cleanliness": 7.5, "affordability": 7, "rating": 7.5, "accessibility": 7.5, "note": "Calm residential area, good for families" },
+  { "name": "Baner & Aundh", "lat": 18.56, "lng": 73.795, "safety": 8, "cleanliness": 8, "affordability": 4.5, "rating": 7.5, "accessibility": 7, "note": "Modern, clean, expensive" },
+  { "name": "Hinjewadi", "lat": 18.5913, "lng": 73.7389, "safety": 6, "cleanliness": 6, "affordability": 6, "rating": 6.5, "accessibility": 5, "note": "IT hub, notorious peak-hour traffic" },
+  { "name": "Viman Nagar & Kalyani Nagar", "lat": 18.556, "lng": 73.908, "safety": 7.5, "cleanliness": 7.5, "affordability": 5, "rating": 7.5, "accessibility": 8, "note": "Near the airport, nightlife and malls" },
+  { "name": "Hadapsar", "lat": 18.502, "lng": 73.933, "safety": 6, "cleanliness": 5.5, "affordability": 7.5, "rating": 6.5, "accessibility": 6.5, "note": "Growing suburb, heavy Solapur Road traffic" },
+  { "name": "Katraj", "lat": 18.455, "lng": 73.858, "safety": 5.5, "cleanliness": 5, "affordability": 8, "rating": 6.5, "accessibility": 5.5, "note": "Budget-friendly; highway accident zone" }
+]
