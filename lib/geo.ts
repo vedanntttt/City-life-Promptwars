@@ -44,13 +44,13 @@ export function routeRisk(
   for (const b of blackspots) {
     if (distanceToPolyline([b.lat, b.lng], coords) < HAZARD_RADIUS_M) {
       risk += b.severity * 2;
-      hazards.push(`⚠️ ${b.name}`);
+      hazards.push(`Accident zone: ${b.name}`);
     }
   }
   for (const r of reports) {
     if (distanceToPolyline([r.lat, r.lng], coords) < HAZARD_RADIUS_M) {
       risk += SEVERITY_WEIGHT[r.severity] * (r.verified ? 2 : 0.5);
-      hazards.push(`${r.verified ? "✅" : "📝"} ${r.summary}`);
+      hazards.push(`${r.verified ? "Verified report" : "Report"}: ${r.summary}`);
     }
   }
   return { risk: Math.round(risk * 10) / 10, hazards };

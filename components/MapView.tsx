@@ -1,18 +1,41 @@
 "use client";
 
 import { useEffect } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import {
+  Construction,
+  Droplets,
+  FileText,
+  Lightbulb,
+  type LucideIcon,
+  MapPin,
+  Siren,
+  Star,
+  TrafficCone,
+  Trash,
+  WavesHorizontal,
+} from "lucide-react";
 import type { Blackspot, LatLng, Place, Report, RouteOption } from "@/lib/types";
 import { price, timeAgo } from "@/lib/format";
+import { CATS } from "@/components/Panels";
 
 export const PUNE: LatLng = [18.5204, 73.8567];
 
-const EMOJI = { food: "🍛", hotel: "🏨", attraction: "🎡", heritage: "🏛️" } as const;
-const SEV_EMOJI: Record<string, string> = {
-  Road: "🚧", Traffic: "🚦", Safety: "🚨", Lighting: "💡", Garbage: "🗑️", Water: "🚰", Flooding: "🌊", Other: "📝",
+const REPORT_ICON: Record<string, LucideIcon> = {
+  Road: Construction, Traffic: TrafficCone, Safety: Siren, Lighting: Lightbulb,
+  Garbage: Trash, Water: Droplets, Flooding: WavesHorizontal, Other: FileText,
 };
+
+// Leaflet divIcons take an HTML string, so render each lucide icon to markup once.
+const svgCache = new Map<LucideIcon, string>();
+const svg = (Icon: LucideIcon) => {
+  if (!svgCache.has(Icon)) svgCache.set(Icon, renderToStaticMarkup(<Icon size={15} strokeWidth={2.25} />));
+  return svgCache.get(Icon)!;
+};
+const catIcon = (c: Place["category"]) => CATS.find((x) => x.key === c)!.Icon;
 
 const icon = (cls: string, html: string) =>
   L.divIcon({ className: "", html: `<div class="pin ${cls}">${html}</div>`, iconSize: [30, 30], iconAnchor: [15, 15] });
@@ -90,7 +113,7 @@ export default function MapView(p: Props) {
             pathOptions={{ color: "#dc2626", fillColor: "#ef4444", fillOpacity: 0.25, weight: 1 }}
           >
             <Tooltip>
-              <b>⚠️ {b.name}</b>
+              <b>{b.name}</b>
               <br />
               {b.reason}
             </Tooltip>
@@ -109,7 +132,7 @@ export default function MapView(p: Props) {
           <Marker
             key={pl.id}
             position={[pl.lat, pl.lng]}
-            icon={icon(`pin-${pl.category} ${p.selected?.id === pl.id ? "pin-selected" : ""}`, EMOJI[pl.category])}
+            icon={icon(`pin-${pl.category} ${p.selected?.id === pl.id ? "pin-selected" : ""}`, svg(catIcon(pl.category)))}
             eventHandlers={{ click: () => p.onSelect(pl) }}
           />
         ))}
@@ -122,12 +145,10 @@ export default function MapView(p: Props) {
             eventHandlers={{ remove: () => p.onSelect(null) }}
           >
             <div className="w-56 space-y-1 text-sm">
-              <div className="text-base font-semibold">
-                {EMOJI[p.selected.category]} {p.selected.name}
-              </div>
-              <div className="text-xs text-slate-500">
-                {p.selected.area} · <span className="text-emerald-700">{price(p.selected.price)}</span> · ⭐{" "}
-                {p.selected.rating}
+              <div className="text-base font-semibold">{p.selected.name}</div>
+              <div className="flex items-center gap-1 text-xs text-slate-500">
+                {p.selected.area} · <span className="text-emerald-700">{price(p.selected.price)}</span> ·
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> {p.selected.rating}
               </div>
               <p className="!my-1 text-slate-700">{p.selected.desc}</p>
               <div className="flex flex-wrap gap-1">
@@ -141,7 +162,7 @@ export default function MapView(p: Props) {
                 onClick={() => p.onRouteHere(p.selected!)}
                 className="mt-1 w-full rounded bg-slate-900 py-1 text-xs font-medium text-white"
               >
-                🧭 Safe route here
+                Safe route here
               </button>
             </div>
           </Popup>
@@ -151,7 +172,7 @@ export default function MapView(p: Props) {
           <Marker
             key={r.id}
             position={[r.lat, r.lng]}
-            icon={icon(`pin-report ${r.verified ? "verified" : ""}`, SEV_EMOJI[r.category] ?? "📝")}
+            icon={icon(`pin-report ${r.verified ? "verified" : ""}`, svg(REPORT_ICON[r.category] ?? FileText))}
           >
             <Popup>
               <div className="w-52 text-sm">
@@ -159,7 +180,7 @@ export default function MapView(p: Props) {
                   {r.category} · <span className="uppercase">{r.severity}</span>
                 </div>
                 <div className={r.verified ? "text-red-600" : "text-slate-500"}>
-                  {r.verified ? `✅ Verified (${r.nearbyCount} reports nearby)` : `Unverified (${r.nearbyCount}/3 nearby)`}
+                  {r.verified ? `Verified (${r.nearbyCount} reports nearby)` : `Unverified (${r.nearbyCount}/3 nearby)`}
                 </div>
                 <p className="!my-1 italic text-slate-700">&ldquo;{r.text}&rdquo;</p>
                 <div className="text-xs text-slate-400">{timeAgo(r.createdAt)}</div>
@@ -170,7 +191,7 @@ export default function MapView(p: Props) {
 
         {p.from && <Marker position={p.from} icon={icon("pin-endpoint", "A")} />}
         {p.to && <Marker position={p.to} icon={icon("pin-endpoint", "B")} />}
-        {p.reportPin && <Marker position={p.reportPin} icon={icon("pin-report", "📍")} />}
+        {p.reportPin && <Marker position={p.reportPin} icon={icon("pin-report", svg(MapPin))} />}
       </MapContainer>
     </div>
   );

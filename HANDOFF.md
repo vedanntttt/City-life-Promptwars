@@ -5,7 +5,15 @@ Plan: `C:\Users\Vedant\.claude\plans\check-the-problem-statement-humming-sedgewi
 
 ## Status (2026-10-09)
 **MVP is done and tested.** All 5 pillars work end to end. Lint and production build are clean.
-**Next phase:** polish (UI, mobile layout, loading states). New features only if time is left; the optional one is a Groq "Tell me the story" button on heritage pins.
+**Polish pass 1 done** (typecheck and lint clean, page renders; **not yet checked visually**, because the browser extension wasn't connected):
+- Geist font applied; orange accent (logo tile, active tab underline, focus rings); `themeColor` viewport meta.
+- Tabs show the icon above the label on phones and side by side from `sm` up.
+- Loading states: map, weather skeleton, route skeleton cards and spinner, report submit spinner, "Loading reports…" in the feed.
+- Empty states: Explore (with "Reset filters"), Safe Route hint before a search, empty report feed. Errors show in red boxes; route errors have "Try again".
+- Map legend overlay at bottom left (place/report colours, or route colours on the Safe Route tab).
+- Route "⇅ Swap" button. Ctrl+Enter submits a report. "Listening…" hint for voice. Fixed the "0 min longer" banner wording.
+**Polish pass 2 done:** emojis replaced with `lucide-react` icons everywhere, including the map pins (rendered to SVG strings in `MapView.tsx`). The logo is now a Shaniwar Wada gate with a Bhagwa flag (`components/Logo.tsx`, plus `app/icon.svg` as the favicon; keep the two in sync). The route pickers group options into Areas and Places. Checked at 1440 px and 375 px.
+**Next:** check visually at desktop and 375 px width (the legend may wrap over the map on small phones), then Upstash. New features only if time is left; the optional one is a Groq "Tell me the story" button on heritage pins.
 
 ## Deployment plan (decided, not yet done)
 - **Vercel only**, with no separate backend: `app/api/reports` deploys as a serverless function.
@@ -17,7 +25,7 @@ Plan: `C:\Users\Vedant\.claude\plans\check-the-problem-statement-humming-sedgewi
 - Pitch line: "the production version would move to Supabase/PostGIS for geo-queries and photo storage."
 
 ## Suggested order for the next chat
-1. Polish: UI, mobile layout, loading and empty states.
+1. ~~Polish: UI, mobile layout, loading and empty states.~~ Done, except the visual check.
 2. Upstash Redis store (about 20 min).
 3. Deploy to Vercel (about 10 min).
 4. Rehearse the demo and record a backup video.
@@ -53,6 +61,6 @@ Main page and state: `app/page.tsx`. Leaflet is loaded with `dynamic(..., { ssr:
 
 ## Demo script (tested)
 1. Explore: toggle layers, filter "₹ Budget", click Shaniwar Wada.
-2. Safe Route: "📍 Deccan & FC Road" → "Rajiv Gandhi Zoological Park". Fastest is about 14 min via Swargate Chowk (risk 4); safest is about 20 min with 0 hazards. Don't start at Swargate, because it's a blackspot.
+2. Safe Route: "Deccan & FC Road" (under Areas) → "Rajiv Gandhi Zoological Park". Fastest is about 14 min via Swargate Chowk (risk 4); safest is about 20 min with 0 hazards. Don't start at Swargate, because it's a blackspot.
 3. Report (voice): "Big pothole and no streetlight near Katraj chowk" → Road / high → VERIFIED (2 seed reports nearby).
 4. Best/Worst tab (Katraj's score drops) + weather banner.

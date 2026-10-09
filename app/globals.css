@@ -7,6 +7,26 @@ body {
   height: 100%;
   background: #f8fafc;
   color: #0f172a;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 9999px;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -2px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .pin {
@@ -18,15 +38,18 @@ body {
   border-radius: 9999px;
   border: 2px solid #fff;
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  color: #fff;
   font-size: 15px;
   line-height: 1;
 }
+.pin svg { display: block; }
 .pin-food { background: #f97316; }
 .pin-hotel { background: #6366f1; }
 .pin-attraction { background: #0ea5e9; }
 .pin-heritage { background: #a16207; }
-.pin-report { background: #fde047; width: 26px; height: 26px; font-size: 13px; }
-.pin-report.verified { background: #ef4444; animation: pulse 1.6s infinite; }
+.pin-report { background: #fde047; color: #713f12; width: 26px; height: 26px; font-size: 13px; }
+.pin-report svg { width: 13px; height: 13px; }
+.pin-report.verified { background: #ef4444; color: #fff; animation: pulse 1.6s infinite; }
 .pin-endpoint { background: #0f172a; color: #fff; font-weight: 700; font-size: 13px; }
 .pin-selected { transform: scale(1.25); border-color: #0f172a; }
 
@@ -37,4 +60,6 @@ body {
 }
 
 .leaflet-popup-content { margin: 12px 14px; }
+.leaflet-popup-content-wrapper { border-radius: 12px; }
+.leaflet-container { font-family: inherit; }
 .picking .leaflet-container { cursor: crosshair; }
